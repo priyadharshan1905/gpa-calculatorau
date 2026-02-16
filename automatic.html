@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>OCR Upload · Anna University GPA</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    
+    <style>
+        /* Import styles from style.css for consistency */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #0a0c18, #03050a);
+            color: #f0f3ff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4wMjUiIC8+PC9zdmc+');
+            pointer-events: none;
+            opacity: 0.4;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(108, 92, 231, 0.15);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            color: #b8bcd0;
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(108, 92, 231, 0.3);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #ffffff, #e0e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .dept-badge {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            background: rgba(108, 92, 231, 0.15);
+            border: 1px solid #6c5ce7;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Upload Area */
+        .upload-container {
+            background: rgba(18, 20, 35, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(108, 92, 231, 0.25);
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 3px dashed #6c5ce7;
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .upload-area:hover {
+            background: rgba(108, 92, 231, 0.15);
+            transform: scale(1.02);
+        }
+
+        .upload-area i {
+            font-size: 4rem;
+            color: #6c5ce7;
+            margin-bottom: 1rem;
+        }
+
+        .upload-area h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-area p {
+            color: #b8bcd0;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #7a7f9a;
+        }
+
+        .preview-container {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .preview-container.show {
+            display: block;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 16px;
+            border: 2px solid #6c5ce7;
+            margin-bottom: 1rem;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: rgba(18, 20, 35, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(108, 92, 231, 0.25);
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .warning-note {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subjects-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .subjects-table th {
+            text-align: left;
+            padding: 1rem 0.5rem;
+            color: #b8bcd0;
+            font-weight: 600;
+            border-bottom: 2px solid #6c5ce7;
+        }
+
+        .subjects-table td {
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.15);
+        }
+
+        .subject-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(10, 12, 26, 0.8);
+            border: 2px solid rgba(108, 92, 231, 0.25);
+            border-radius: 12px;
+            color: #f0f3ff;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .subject-input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .subject-input.error {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .grade-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(10, 12, 26, 0.8);
+            border: 2px solid rgba(108, 92, 231, 0.25);
+            border-radius: 12px;
+            color: #f0f3ff;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .grade-input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .grade-input.error {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .grade-input::placeholder {
+            color: #7a7f9a;
+            font-style: italic;
+        }
+
+        .ignored-badge {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            padding: 0.2rem 0.6rem;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .add-row-btn {
+            background: rgba(108, 92, 231, 0.15);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            color: #b8bcd0;
+            padding: 0.8rem 1.5rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .add-row-btn:hover {
+            background: rgba(108, 92, 231, 0.3);
+            color: white;
+        }
+
+        .delete-row {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .delete-row:hover {
+            transform: scale(1.2);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn {
+            background: linear-gradient(145deg, #6c5ce7, #5649c0);
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(108, 92, 231, 0.6);
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            color: #b8bcd0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(108, 92, 231, 0.15);
+            color: white;
+        }
+
+        /* Result Dashboard */
+        .result-dashboard {
+            background: linear-gradient(145deg, rgba(28, 31, 58, 0.95), rgba(18, 21, 45, 0.98));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            border-radius: 32px;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-dashboard.show {
+            display: block;
+            animation: fadeSlideUp 0.4s ease;
+        }
+
+        .result-content {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 640px) {
+            .result-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .result-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(145deg, #ffd700, #ffb347);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(45deg);
+        }
+
+        .result-icon i {
+            font-size: 2.4rem;
+            color: white;
+            transform: rotate(-45deg);
+        }
+
+        .result-details {
+            flex: 1;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: #b8bcd0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .gpa-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(145deg, #ffeaa5, #ffb27f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin: 0.3rem 0;
+        }
+
+        .result-meta {
+            color: #b8bcd0;
+            font-size: 0.9rem;
+        }
+
+        .result-chart {
+            width: 90px;
+            height: 90px;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(108, 92, 231, 0.3);
+            border-radius: 50%;
+            border-top-color: #6c5ce7;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #7a7f9a;
+            font-size: 0.8rem;
+        }
+
+        /* Grade hint */
+        .grade-hint {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(108, 92, 231, 0.1);
+            border-radius: 12px;
+            color: #b8bcd0;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .grade-hint i {
+            color: #6c5ce7;
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+
+    <div class="container">
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Home
+        </a>
+
+        <div class="header">
+            <div class="dept-badge" id="deptBadge">Information Technology</div>
+            <h1>Upload Marksheet Image</h1>
+            <p style="color: #b8bcd0;">OCR will extract subjects & grades. You can edit any field.</p>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-container">
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Click to Upload or Drag & Drop</h3>
+                <p>PNG, JPG, JPEG up to 8MB</p>
+                <p style="font-size: 0.8rem; color: #7a7f9a;">NM / N / MX subjects will be ignored automatically</p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            </div>
+            <div class="file-info" id="fileInfo"></div>
+        </div>
+
+        <!-- Image Preview -->
+        <div class="preview-container" id="previewContainer">
+            <img id="imagePreview" class="image-preview" alt="Preview">
+        </div>
+
+        <!-- Subjects Table -->
+        <div class="table-container" id="tableContainer" style="display: none;">
+            <div class="table-header">
+                <h2>
+                    <i class="fas fa-pencil-alt"></i>
+                    <span id="semesterDisplay">Semester</span>
+                </h2>
+                <div class="warning-note" id="warningNote">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Review and correct missing/incorrect values (highlighted in red)</span>
+                </div>
+            </div>
+
+            <div class="grade-hint">
+                <i class="fas fa-info-circle"></i>
+                <span>Enter grades as: O, A+, A, B+, B, C, U (or any other value)</span>
+            </div>
+
+            <table class="subjects-table">
+                <thead>
+                    <tr>
+                        <th>Subject Code</th>
+                        <th>Grade</th>
+                        <th style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Dynamic rows will be inserted here -->
+                </tbody>
+            </table>
+
+            <button class="add-row-btn" id="addRowBtn">
+                <i class="fas fa-plus"></i>
+                Add Empty Row
+            </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons" id="actionButtons" style="display: none;">
+            <button class="primary-btn" id="calculateBtn">
+                <i class="fas fa-calculator"></i>
+                Calculate GPA
+            </button>
+            <button class="secondary-btn" id="resetBtn">
+                <i class="fas fa-redo-alt"></i>
+                Upload New Image
+            </button>
+        </div>
+
+        <!-- Result Dashboard -->
+        <div class="result-dashboard" id="resultDashboard">
+            <div class="result-content">
+                <div class="result-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="result-details">
+                    <div class="result-label">Calculated GPA</div>
+                    <div class="gpa-number" id="gpaValue">0.00</div>
+                    <div class="result-meta" id="resultMeta"></div>
+                </div>
+                <div class="result-chart">
+                    <canvas id="gpaMeter" width="90" height="90"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 Anna University GPA · OCR Upload · NM/N/MX subjects ignored</p>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // OCR UPLOAD PAGE - AUTOMATIC.HTML
+        // ============================================
+
+        // Grade points mapping (same as script.js)
+        const GRADE_POINTS = {
+            'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'D': 0, 'U': 0
+        };
+
+        // Get selected department from session storage
+        const selectedDept = sessionStorage.getItem('selectedDepartment') || 'it';
+        const selectedSemester = sessionStorage.getItem('selectedSemester') || '';
+
+        // Department names mapping
+        const DEPT_NAMES = {
+            it: 'Information Technology',
+            cse: 'Computer Science',
+            aids: 'AI & Data Science',
+            ece: 'Electronics & Communication',
+            eee: 'Electrical & Electronics',
+            mech: 'Mechanical Engineering'
+        };
+
+        const DEPT_COLORS = {
+            it: '#6c5ce7', cse: '#00b894', aids: '#e84393',
+            ece: '#0984e3', eee: '#fdcb6e', mech: '#e17055'
+        };
+
+        // DOM Elements
+        const deptBadge = document.getElementById('deptBadge');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const tableContainer = document.getElementById('tableContainer');
+        const tableBody = document.getElementById('tableBody');
+        const actionButtons = document.getElementById('actionButtons');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const addRowBtn = document.getElementById('addRowBtn');
+        const semesterDisplay = document.getElementById('semesterDisplay');
+        const warningNote = document.getElementById('warningNote');
+        const resultDashboard = document.getElementById('resultDashboard');
+        const gpaValue = document.getElementById('gpaValue');
+        const resultMeta = document.getElementById('resultMeta');
+        const gpaMeter = document.getElementById('gpaMeter');
+
+        let gpaChart = null;
+        let currentSemester = selectedSemester || '4';
+        let extractedRows = [];
+
+        // Set department badge
+        deptBadge.textContent = DEPT_NAMES[selectedDept] || 'Information Technology';
+        deptBadge.style.borderColor = DEPT_COLORS[selectedDept] || '#6c5ce7';
+        deptBadge.style.color = DEPT_COLORS[selectedDept] || '#6c5ce7';
+
+        semesterDisplay.textContent = `Semester ${currentSemester}`;
+
+        // ============================================
+        // UPLOAD HANDLERS
+        // ============================================
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(108, 92, 231, 0.2)';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'rgba(108, 92, 231, 0.05)';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(108, 92, 231, 0.05)';
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFileUpload(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileUpload(file);
+            }
+        });
+
+        async function handleFileUpload(file) {
+            // Show loading
+            uploadArea.innerHTML = '<div class="loading-spinner"></div><p style="margin-top: 1rem;">Processing image...</p>';
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                previewContainer.classList.add('show');
+            };
+            reader.readAsDataURL(file);
+
+            fileInfo.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('department', selectedDept);
+
+            try {
+                const response = await fetch('/api/extract', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Update semester if detected
+                if (data.semester_detected) {
+                    currentSemester = data.semester_detected;
+                    semesterDisplay.textContent = `Semester ${currentSemester}`;
+                }
+
+                // Store extracted rows
+                extractedRows = data.extracted_rows || [];
+
+                // Render table
+                renderTable(extractedRows);
+                tableContainer.style.display = 'block';
+                actionButtons.style.display = 'flex';
+                resultDashboard.classList.remove('show');
+
+                // Reset upload area
+                uploadArea.innerHTML = `
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Click to Upload or Drag & Drop</h3>
+                    <p>PNG, JPG, JPEG up to 8MB</p>
+                    <p style="font-size: 0.8rem; color: #7a7f9a;">NM / N / MX subjects will be ignored automatically</p>
+                `;
+
+            } catch (error) {
+                alert('Error processing image: ' + error.message);
+                uploadArea.innerHTML = `
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Click to Upload or Drag & Drop</h3>
+                    <p>PNG, JPG, JPEG up to 8MB</p>
+                    <p style="font-size: 0.8rem; color: #7a7f9a;">NM / N / MX subjects will be ignored automatically</p>
+                `;
+            }
+        }
+
+        // ============================================
+        // TABLE RENDERING
+        // ============================================
+        function renderTable(rows) {
+            let html = '';
+
+            if (rows.length === 0) {
+                // Add one empty row if no data
+                html = createRowHtml('', '', 0);
+            } else {
+                rows.forEach((row, index) => {
+                    const isIgnored = row.is_ignored || shouldIgnoreSubject(row.subject_code);
+                    html += createRowHtml(row.subject_code || '', row.grade || '', index, isIgnored);
+                });
+            }
+
+            tableBody.innerHTML = html;
+            attachTableEventListeners();
+            validateAllRows();
+        }
+
+        function createRowHtml(subjectCode, grade, index, isIgnored = false) {
+            const ignoredBadge = isIgnored ? '<span class="ignored-badge">Will be ignored</span>' : '';
+
+            return `
+                <tr data-index="${index}" data-ignored="${isIgnored}">
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="text" class="subject-input ${!subjectCode ? 'error' : ''}" 
+                                   value="${subjectCode}" placeholder="e.g. CS3451">
+                            ${ignoredBadge}
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="grade-input ${!grade ? 'error' : ''}" 
+                               value="${grade}" placeholder="e.g. A+, O, B, etc.">
+                    </td>
+                    <td class="delete-row" onclick="deleteRow(this)">
+                        <i class="fas fa-trash-alt"></i>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function attachTableEventListeners() {
+            // Input event listeners for validation
+            document.querySelectorAll('.subject-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const row = this.closest('tr');
+                    const subjectCode = this.value.trim().toUpperCase();
+                    
+                    if (!subjectCode) {
+                        this.classList.add('error');
+                    } else {
+                        this.classList.remove('error');
+                    }
+
+                    // Check if subject should be ignored
+                    const isIgnored = shouldIgnoreSubject(subjectCode);
+                    row.dataset.ignored = isIgnored;
+
+                    // Update ignored badge
+                    let badge = row.querySelector('.ignored-badge');
+                    if (isIgnored) {
+                        if (!badge) {
+                            const td = this.closest('td');
+                            const div = td.querySelector('div');
+                            badge = document.createElement('span');
+                            badge.className = 'ignored-badge';
+                            badge.textContent = 'Will be ignored';
+                            div.appendChild(badge);
+                        }
+                    } else {
+                        if (badge) badge.remove();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.grade-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    if (!this.value.trim()) {
+                        this.classList.add('error');
+                    } else {
+                        this.classList.remove('error');
+                    }
+                });
+            });
+        }
+
+        function validateAllRows() {
+            document.querySelectorAll('tr').forEach(row => {
+                if (row.cells && row.cells.length >= 2) {
+                    const subjectInput = row.cells[0]?.querySelector('.subject-input');
+                    const gradeInput = row.cells[1]?.querySelector('.grade-input');
+
+                    if (subjectInput && !subjectInput.value) {
+                        subjectInput.classList.add('error');
+                    }
+                    if (gradeInput && !gradeInput.value) {
+                        gradeInput.classList.add('error');
+                    }
+                }
+            });
+        }
+
+        function shouldIgnoreSubject(code) {
+            if (!code) return false;
+            const upper = code.toUpperCase();
+            return upper.startsWith('NM') || upper.startsWith('N') || upper.startsWith('MX');
+        }
+
+        // Delete row function
+        window.deleteRow = function(element) {
+            const row = element.closest('tr');
+            const tbody = row.parentNode;
+            if (tbody.children.length > 1) {
+                row.remove();
+                validateAllRows();
+            } else {
+                alert('You need at least one row. Add a new row if needed.');
+            }
+        };
+
+        // Add row button
+        addRowBtn.addEventListener('click', () => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = createRowHtml('', '', tableBody.children.length);
+            tableBody.appendChild(newRow);
+            attachTableEventListeners();
+        });
+
+        // Reset button
+        resetBtn.addEventListener('click', () => {
+            // Clear everything
+            tableContainer.style.display = 'none';
+            actionButtons.style.display = 'none';
+            previewContainer.classList.remove('show');
+            fileInfo.textContent = '';
+            fileInput.value = '';
+            resultDashboard.classList.remove('show');
+            extractedRows = [];
+        });
+
+        // ============================================
+        // GPA CALCULATION
+        // ============================================
+        calculateBtn.addEventListener('click', async () => {
+            // Collect data from table
+            const rows = [];
+            const errors = [];
+
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                const subjectInput = row.cells[0]?.querySelector('.subject-input');
+                const gradeInput = row.cells[1]?.querySelector('.grade-input');
+                
+                const subjectCode = subjectInput?.value.trim().toUpperCase() || '';
+                const grade = gradeInput?.value.trim().toUpperCase() || '';
+
+                // Skip completely empty rows
+                if (!subjectCode && !grade) return;
+
+                // Validate
+                if (!subjectCode) {
+                    subjectInput?.classList.add('error');
+                    errors.push('Missing subject code');
+                }
+                if (!grade) {
+                    gradeInput?.classList.add('error');
+                    errors.push('Missing grade');
+                }
+
+                rows.push({
+                    subject_code: subjectCode,
+                    grade: grade
+                });
+            });
+
+            if (errors.length > 0) {
+                alert('Please fill in all subject codes and grades (highlighted in red)');
+                return;
+            }
+
+            // Show loading on button
+            const originalText = calculateBtn.innerHTML;
+            calculateBtn.innerHTML = '<div class="loading-spinner"></div> Calculating...';
+            calculateBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/compute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        semester: currentSemester,
+                        department: selectedDept,
+                        rows: rows
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                // Display result
+                if (result.success) {
+                    gpaValue.textContent = result.gpa.toFixed(2);
+                    
+                    let message = `✅ Credits: ${result.total_credits}`;
+                    if (result.ignored_subjects?.length > 0) {
+                        message += ` | Ignored: ${result.ignored_subjects.length} NM/N/MX`;
+                    }
+                    
+                    resultMeta.innerHTML = `<span style="color: #10b981;">${message}</span>`;
+                } else {
+                    gpaValue.textContent = '0.00';
+                    resultMeta.innerHTML = `<span style="color: #ef4444;">❌ ${result.message}</span>`;
+                }
+
+                resultDashboard.classList.add('show');
+                updateGaugeChart(result.gpa || 0);
+
+            } catch (error) {
+                alert('Error calculating GPA: ' + error.message);
+            } finally {
+                calculateBtn.innerHTML = originalText;
+                calculateBtn.disabled = false;
+            }
+        });
+
+        // ============================================
+        // GAUGE CHART
+        // ============================================
+        function updateGaugeChart(gpa) {
+            const ctx = gpaMeter.getContext('2d');
+            if (gpaChart) gpaChart.destroy();
+
+            const percentage = (gpa / 10) * 100;
+
+            gpaChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [DEPT_COLORS[selectedDept] || '#6c5ce7', 'rgba(30, 33, 60, 0.3)'],
+                        borderWidth: 0,
+                        circumference: 270,
+                        rotation: 225
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { enabled: false },
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

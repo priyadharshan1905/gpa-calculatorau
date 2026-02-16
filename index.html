@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Anna University GPA · 2021 Regulation · All 6 Depts</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="gradient-sphere"></div>
+    <div class="gradient-sphere-2"></div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo-wrapper">
+                <div class="logo-glow">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="title-group">
+                    <h1>ANNA UNIVERSITY GPA</h1>
+                    <div class="badge-container">
+                        <span class="badge badge-2021">2021 REGULATION</span>
+                        <span class="badge">ALL 6 DEPTS</span>
+                    </div>
+                </div>
+            </div>
+            <p class="subhead">
+                <i class="fas fa-chevron-right"></i> IT · CSE · AIDS · ECE · EEE · MECH
+                <i class="fas fa-chevron-left"></i>
+            </p>
+        </header>
+
+        <!-- DEPARTMENT CARDS - ALL 6 DEPARTMENTS -->
+        <div class="dept-grid">
+            <div class="dept-card active" data-dept="it" id="dept-it">
+                <div class="card-icon">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3>IT</h3>
+                <div class="dept-meta">
+                    <span class="status">
+                        <i class="fas fa-check-circle"></i> Available
+                    </span>
+                </div>
+            </div>
+            
+            <div class="dept-card" data-dept="cse" id="dept-cse">
+                <div class="card-icon">
+                    <i class="fas fa-computer"></i>
+                </div>
+                <h3>CSE</h3>
+                <div class="dept-meta">
+                    <span class="status">
+                        <i class="fas fa-check-circle"></i> Available
+                    </span>
+                </div>
+            </div>
+            
+            <div class="dept-card" data-dept="aids" id="dept-aids">
+                <div class="card-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>AIDS</h3>
+                <div class="dept-meta">
+                    <span class="status">
+                        <i class="fas fa-check-circle"></i> Available
+                    </span>
+                </div>
+            </div>
+            
+            <div class="dept-card" data-dept="ece" id="dept-ece">
+                <div class="card-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>ECE</h3>
+                <div class="dept-meta">
+                    <span class="status">
+                        <i class="fas fa-check-circle"></i> Available
+                    </span>
+                </div>
+            </div>
+            
+            <div class="dept-card" data-dept="eee" id="dept-eee">
+                <div class="card-icon">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <h3>EEE</h3>
+                <div class="dept-meta">
+                    <span class="status">
+                        <i class="fas fa-check-circle"></i> Available
+                    </span>
+                </div>
+            </div>
+            
+            <div class="dept-card" data-dept="mech" id="dept-mech">
+                <div class="card-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>MECH</h3>
+                <div class="dept-meta">
+                    <span class="status">
+                        <i class="fas fa-check-circle"></i> Available
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SELECTION PANEL -->
+        <div class="selection-panel">
+            <div class="panel-title">
+                <i class="fas fa-sliders-h"></i>
+                <span>Configure Semester</span>
+            </div>
+            
+            <div class="selection-grid">
+                <div class="input-field">
+                    <label>
+                        <i class="fas fa-bookmark"></i>
+                        <span>Regulation</span>
+                    </label>
+                    <div class="select-wrapper disabled">
+                        <select id="regulationSelect" disabled>
+                            <option value="2021" selected>2021 Regulation (Only)</option>
+                        </select>
+                        <i class="fas fa-lock select-icon"></i>
+                    </div>
+                </div>
+                
+                <div class="input-field">
+                    <label>
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Semester</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="semesterSelect">
+                            <option value="" disabled selected>— Select Semester —</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-icon"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NEW: UPLOAD IMAGE BUTTON -->
+            <div class="upload-section">
+                <div class="upload-divider">
+                    <span class="divider-text">OR</span>
+                </div>
+                
+                <div class="upload-card" id="uploadCard">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Upload Marksheet Image</h3>
+                    <p>Extract subjects & grades automatically using OCR</p>
+                    <button class="upload-btn" id="uploadBtn">
+                        <i class="fas fa-camera"></i>
+                        <span>Upload Image</span>
+                    </button>
+                    <div class="upload-note">
+                        <i class="fas fa-info-circle"></i>
+                        <span>NM / N / MX subjects will be ignored automatically</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEPARTMENT INFO (Dynamic) -->
+        <div id="deptInfoContainer"></div>
+
+        <!-- SUBJECTS CONTAINER -->
+        <div class="subjects-container" id="subjectsContainer">
+            <div class="subjects-header">
+                <div class="header-left">
+                    <h2>
+                        <i class="fas fa-book-open"></i>
+                        <span id="semesterDisplay">Semester</span>
+                    </h2>
+                    <div class="credit-summary" id="creditSummary">
+                        <i class="fas fa-database"></i>
+                        <span id="totalCreditsDisplay">Total: 0</span>
+                    </div>
+                </div>
+                <div class="grade-legend">
+                    <span><i class="fas fa-circle" style="color: #10b981;"></i> Pass</span>
+                    <span><i class="fas fa-circle" style="color: #ef4444;"></i> Arrear</span>
+                </div>
+            </div>
+            
+            <div class="subjects-grid" id="subjectsGrid"></div>
+            
+            <div class="elective-hint" id="electiveHint" style="display: none;">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Elective / Unknown Subjects</strong>
+                    <p style="font-size: 0.8rem; margin-top: 0.2rem;">Unknown subject codes = 3 credits assumed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION CENTER -->
+        <div class="action-center" id="actionCenter">
+            <button class="calculate-btn" id="calculateBtn">
+                <span>Calculate GPA</span>
+                <span class="btn-icon">
+                    <i class="fas fa-calculator"></i>
+                </span>
+            </button>
+        </div>
+
+        <!-- RESULT DASHBOARD -->
+        <div class="result-dashboard" id="resultDashboard">
+            <div class="result-content">
+                <div class="result-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="result-details">
+                    <div class="result-label">Semester GPA</div>
+                    <div class="gpa-number" id="gpaValue">0.00</div>
+                    <div class="result-meta" id="resultMeta">
+                        <span><i class="fas fa-circle"></i> Ready</span>
+                    </div>
+                </div>
+                <div class="result-chart">
+                    <canvas id="gpaMeter" width="80" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div>© 2024 Anna University GPA · 2021 Regulation</div>
+            <div class="footer-badges">
+                <span class="footer-badge">IT · CSE · AIDS</span>
+                <span class="footer-badge">ECE · EEE · MECH</span>
+                <span class="footer-badge">OCR Upload Available</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
